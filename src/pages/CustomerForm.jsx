@@ -8,7 +8,7 @@ const TOP_FIELDS = [
     { id: 'shoulder', label: 'Shoulder' },
     { id: 'sleeveLength', label: 'Sleeve Length' },
     { id: 'topLength', label: 'Top Length' },
-    { id: 'check', label: 'Check' },
+    { id: 'check', label: 'Chest' },
     { id: 'acrossBack', label: 'Across Back' },
     { id: 'cuff', label: 'Cuff' },
     { id: 'aroundArms', label: 'Around Arms' }
