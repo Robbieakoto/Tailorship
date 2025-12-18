@@ -48,8 +48,8 @@ const Home = () => {
                 <button
                     onClick={() => navigate('/records')}
                     style={{
-                        background: 'white',
-                        color: 'var(--primary)',
+                        background: 'var(--blue)',
+                        color: 'white',
                         padding: '30px',
                         borderRadius: 'var(--radius)',
                         display: 'flex',
@@ -59,11 +59,11 @@ const Home = () => {
                         boxShadow: 'var(--shadow)',
                         fontSize: '1.1rem',
                         fontWeight: '600',
-                        border: '2px solid var(--primary)'
+                        border: 'none'
                     }}
                 >
                     <BookOpen size={32} />
-                    View Records
+                    View Customer
                 </button>
             </div>
 

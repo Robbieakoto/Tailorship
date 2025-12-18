@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Scissors } from 'lucide-react';
+import { useRegisterSW } from 'virtual:pwa-register/react';
 import { CustomerProvider } from './hooks/useCustomers';
 import Home from './pages/Home';
 import CustomerList from './pages/CustomerList';
@@ -10,6 +11,23 @@ import './index.css';
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
+
+  // Service Worker for automatic updates
+  useRegisterSW({
+    onRegistered(r) {
+      // Check for updates every hour
+      r && setInterval(() => {
+        r.update();
+      }, 60 * 60 * 1000);
+    },
+    onNeedRefresh() {
+      // If update found, window will naturally reload on next visit 
+      // or we can force it here for immediate effect
+      if (window.confirm('A new version of Tailorship is available. Update now?')) {
+        window.location.reload();
+      }
+    },
+  });
 
   useEffect(() => {
     const timer = setTimeout(() => {

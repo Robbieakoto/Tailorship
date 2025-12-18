@@ -19,7 +19,14 @@ const CustomerDetail = () => {
         topLength: 'Top Length',
         trouserLength: 'Trouser Length',
         thigh: 'Thigh',
-        ankle: 'Ankle'
+        ankle: 'Ankle',
+        check: 'Check',
+        acrossBack: 'Across Back',
+        cuff: 'Cuff',
+        aroundArms: 'Around Arms',
+        knee: 'Knee',
+        bass: 'Bass',
+        seat: 'Seat'
     };
 
     return (

@@ -12,7 +12,14 @@ const MEASUREMENT_FIELDS = [
     { id: 'topLength', label: 'Top Length' },
     { id: 'trouserLength', label: 'Trouser Length' },
     { id: 'thigh', label: 'Thigh' },
-    { id: 'ankle', label: 'Ankle' }
+    { id: 'ankle', label: 'Ankle' },
+    { id: 'check', label: 'Check' },
+    { id: 'acrossBack', label: 'Across Back' },
+    { id: 'cuff', label: 'Cuff' },
+    { id: 'aroundArms', label: 'Around Arms' },
+    { id: 'knee', label: 'Knee' },
+    { id: 'bass', label: 'Bass' },
+    { id: 'seat', label: 'Seat' }
 ];
 
 const CustomerForm = () => {
@@ -97,7 +104,6 @@ const CustomerForm = () => {
                                 <select name="gender" value={formData.gender} onChange={handleChange}>
                                     <option value="Female">Female</option>
                                     <option value="Male">Male</option>
-                                    <option value="Other">Other</option>
                                 </select>
                             </div>
                             <div>
@@ -135,7 +141,7 @@ const CustomerForm = () => {
                 <button
                     type="submit"
                     style={{
-                        background: 'var(--primary)',
+                        background: 'var(--blue)',
                         color: 'white',
                         padding: '16px',
                         borderRadius: '12px',
