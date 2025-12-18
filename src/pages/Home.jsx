@@ -69,6 +69,7 @@ const Home = () => {
 
             <footer style={{ marginTop: 'auto', padding: '40px 0', textAlign: 'center', opacity: 0.6 }}>
                 <p>© {new Date().getFullYear()} Tailorship Pro</p>
+                <p style={{ fontSize: '0.85rem', marginTop: '8px' }}>Built with ❤️ by Robbieshares</p>
             </footer>
         </div>
     );
