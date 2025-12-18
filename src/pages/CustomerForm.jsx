@@ -3,24 +3,29 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { ChevronLeft, Save } from 'lucide-react';
 import { useCustomers } from '../hooks/useCustomers';
 
-const MEASUREMENT_FIELDS = [
+const TOP_FIELDS = [
     { id: 'bust', label: 'Bust' },
-    { id: 'waist', label: 'Waist' },
-    { id: 'hips', label: 'Hips' },
     { id: 'shoulder', label: 'Shoulder' },
     { id: 'sleeveLength', label: 'Sleeve Length' },
     { id: 'topLength', label: 'Top Length' },
-    { id: 'trouserLength', label: 'Trouser Length' },
-    { id: 'thigh', label: 'Thigh' },
-    { id: 'ankle', label: 'Ankle' },
     { id: 'check', label: 'Check' },
     { id: 'acrossBack', label: 'Across Back' },
     { id: 'cuff', label: 'Cuff' },
-    { id: 'aroundArms', label: 'Around Arms' },
+    { id: 'aroundArms', label: 'Around Arms' }
+];
+
+const BOTTOM_FIELDS = [
+    { id: 'waist', label: 'Waist' },
+    { id: 'hips', label: 'Hips' },
+    { id: 'trouserLength', label: 'Trouser Length' },
+    { id: 'thigh', label: 'Thigh' },
+    { id: 'ankle', label: 'Ankle' },
     { id: 'knee', label: 'Knee' },
     { id: 'bass', label: 'Bass' },
     { id: 'seat', label: 'Seat' }
 ];
+
+const ALL_FIELDS = [...TOP_FIELDS, ...BOTTOM_FIELDS];
 
 const CustomerForm = () => {
     const { id } = useParams();
@@ -32,7 +37,7 @@ const CustomerForm = () => {
         phone: '',
         gender: 'Female',
         dateTaken: new Date().toISOString().split('T')[0],
-        measurements: MEASUREMENT_FIELDS.reduce((acc, field) => ({ ...acc, [field.id]: '' }), {})
+        measurements: ALL_FIELDS.reduce((acc, field) => ({ ...acc, [field.id]: '' }), {})
     });
 
     useEffect(() => {
@@ -120,21 +125,44 @@ const CustomerForm = () => {
                 </section>
 
                 <section>
-                    <h3 style={{ marginBottom: '12px', fontSize: '1rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Measurements (inches)</h3>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                        {MEASUREMENT_FIELDS.map(field => (
-                            <div key={field.id}>
-                                <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.85rem', color: 'var(--text-muted)' }}>{field.label}</label>
-                                <input
-                                    name={`m_${field.id}`}
-                                    type="number"
-                                    step="0.25"
-                                    value={formData.measurements[field.id]}
-                                    onChange={handleChange}
-                                    placeholder="0.0"
-                                />
-                            </div>
-                        ))}
+                    <h3 style={{ marginBottom: '16px', fontSize: '1rem', textTransform: 'uppercase', letterSpacing: '1px', borderBottom: '2px solid var(--secondary)', paddingBottom: '8px' }}>Measurements (inches)</h3>
+
+                    <div style={{ marginBottom: '24px' }}>
+                        <h4 style={{ marginBottom: '12px', fontSize: '0.9rem', color: 'var(--primary)', fontWeight: '600' }}>Upper Body (Top)</h4>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                            {TOP_FIELDS.map(field => (
+                                <div key={field.id}>
+                                    <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.85rem', color: 'var(--text-muted)' }}>{field.label}</label>
+                                    <input
+                                        name={`m_${field.id}`}
+                                        type="number"
+                                        step="0.25"
+                                        value={formData.measurements[field.id]}
+                                        onChange={handleChange}
+                                        placeholder="0.0"
+                                    />
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 style={{ marginBottom: '12px', fontSize: '0.9rem', color: 'var(--primary)', fontWeight: '600' }}>Lower Body (Bottom)</h4>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                            {BOTTOM_FIELDS.map(field => (
+                                <div key={field.id}>
+                                    <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.85rem', color: 'var(--text-muted)' }}>{field.label}</label>
+                                    <input
+                                        name={`m_${field.id}`}
+                                        type="number"
+                                        step="0.25"
+                                        value={formData.measurements[field.id]}
+                                        onChange={handleChange}
+                                        placeholder="0.0"
+                                    />
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </section>
 

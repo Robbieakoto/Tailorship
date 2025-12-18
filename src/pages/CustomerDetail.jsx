@@ -77,15 +77,37 @@ const CustomerDetail = () => {
 
             <div style={{ background: 'white', padding: '24px', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)' }}>
                 <h3 style={{ marginBottom: '20px', borderBottom: '2px solid var(--secondary)', paddingBottom: '10px' }}>Body Measurements</h3>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-                    {Object.entries(customer.measurements).map(([key, value]) => (
-                        <div key={key} style={{ borderBottom: '1px solid #f0f0f0', paddingBottom: '10px' }}>
-                            <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '2px' }}>{labels[key]}</div>
-                            <div style={{ fontSize: '1.2rem', fontWeight: '600', color: 'var(--primary)' }}>
-                                {value ? `${value}"` : '—'}
+
+                <div style={{ marginBottom: '30px' }}>
+                    <h4 style={{ marginBottom: '16px', fontSize: '0.95rem', color: 'var(--primary)', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        Upper Body (Top)
+                    </h4>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                        {['bust', 'shoulder', 'sleeveLength', 'topLength', 'check', 'acrossBack', 'cuff', 'aroundArms'].map(key => (
+                            <div key={key} style={{ borderBottom: '1px solid #f0f0f0', paddingBottom: '10px' }}>
+                                <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '2px' }}>{labels[key]}</div>
+                                <div style={{ fontSize: '1.2rem', fontWeight: '600', color: 'var(--primary)' }}>
+                                    {customer.measurements[key] ? `${customer.measurements[key]}"` : '—'}
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
+                </div>
+
+                <div>
+                    <h4 style={{ marginBottom: '16px', fontSize: '0.95rem', color: 'var(--primary)', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        Lower Body (Bottom)
+                    </h4>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                        {['waist', 'hips', 'trouserLength', 'thigh', 'ankle', 'knee', 'bass', 'seat'].map(key => (
+                            <div key={key} style={{ borderBottom: '1px solid #f0f0f0', paddingBottom: '10px' }}>
+                                <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '2px' }}>{labels[key]}</div>
+                                <div style={{ fontSize: '1.2rem', fontWeight: '600', color: 'var(--primary)' }}>
+                                    {customer.measurements[key] ? `${customer.measurements[key]}"` : '—'}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
 
