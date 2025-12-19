@@ -53,28 +53,38 @@ const authenticate = (req, res, next) => {
 
 // Register endpoint
 app.post('/api/auth/register', (req, res) => {
-    const { userId } = req.body;
-    if (!userId) return res.status(400).json({ error: 'User ID required' });
+    try {
+        const { userId } = req.body;
+        if (!userId) return res.status(400).json({ error: 'User ID required' });
 
-    const existing = stmts.getUser.get(userId);
-    if (existing) {
-        return res.status(400).json({ error: 'User ID already exists. Please choose another or login.' });
+        const existing = stmts.getUser.get(userId);
+        if (existing) {
+            return res.status(400).json({ error: 'User ID already exists. Please choose another or login.' });
+        }
+
+        stmts.createUser.run(userId);
+        res.status(201).json({ success: true, user: { id: userId } });
+    } catch (err) {
+        console.error('Register error:', err);
+        res.status(500).json({ error: 'Database error during registration' });
     }
-
-    stmts.createUser.run(userId);
-    res.json({ success: true, user: { id: userId } });
 });
 
 // Auth endpoint
 app.post('/api/auth/login', (req, res) => {
-    const { userId } = req.body;
-    if (!userId) return res.status(400).json({ error: 'User ID required' });
+    try {
+        const { userId } = req.body;
+        if (!userId) return res.status(400).json({ error: 'User ID required' });
 
-    let user = stmts.getUser.get(userId);
-    if (!user) {
-        return res.status(404).json({ error: 'User ID not found. Please create one.' });
+        let user = stmts.getUser.get(userId);
+        if (!user) {
+            return res.status(404).json({ error: 'User ID not found. Please create one.' });
+        }
+        res.json({ success: true, user });
+    } catch (err) {
+        console.error('Login error:', err);
+        res.status(500).json({ error: 'Database error during login' });
     }
-    res.json({ success: true, user });
 });
 
 // Customers endpoints

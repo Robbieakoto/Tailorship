@@ -41,18 +41,24 @@ export const CustomerProvider = ({ children }) => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ userId: id })
             });
-            const data = await response.json();
-            if (response.ok && data.success) {
-                setUserId(id);
-                localStorage.setItem('tailorship_userid', id);
-                setIsLoggedIn(true);
-                return { success: true };
+
+            const contentType = response.headers.get("content-type");
+            if (contentType && contentType.indexOf("application/json") !== -1) {
+                const data = await response.json();
+                if (response.ok && data.success) {
+                    setUserId(id);
+                    localStorage.setItem('tailorship_userid', id);
+                    setIsLoggedIn(true);
+                    return { success: true };
+                } else {
+                    return { success: false, error: data.error || 'Login failed' };
+                }
             } else {
-                return { success: false, error: data.error || 'Login failed' };
+                return { success: false, error: 'Server returned an unexpected response format' };
             }
         } catch (error) {
             console.error('Login error:', error);
-            return { success: false, error: 'Network error or server down' };
+            return { success: false, error: 'Cannot connect to server. Please check your connection.' };
         }
     };
 
@@ -63,18 +69,24 @@ export const CustomerProvider = ({ children }) => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ userId: id })
             });
-            const data = await response.json();
-            if (response.ok && data.success) {
-                setUserId(id);
-                localStorage.setItem('tailorship_userid', id);
-                setIsLoggedIn(true);
-                return { success: true };
+
+            const contentType = response.headers.get("content-type");
+            if (contentType && contentType.indexOf("application/json") !== -1) {
+                const data = await response.json();
+                if (response.ok && data.success) {
+                    setUserId(id);
+                    localStorage.setItem('tailorship_userid', id);
+                    setIsLoggedIn(true);
+                    return { success: true };
+                } else {
+                    return { success: false, error: data.error || 'Registration failed' };
+                }
             } else {
-                return { success: false, error: data.error || 'Registration failed' };
+                return { success: false, error: 'Server returned an unexpected response format' };
             }
         } catch (error) {
             console.error('Registration error:', error);
-            return { success: false, error: 'Network error or server down' };
+            return { success: false, error: 'Cannot connect to server. Please check your connection.' };
         }
     };
 

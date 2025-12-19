@@ -1,17 +1,19 @@
 import { useState } from 'react';
 import { useCustomers } from '../hooks/useCustomers';
-import { Scissors, ArrowRight, Loader2, UserPlus, LogIn } from 'lucide-react';
+import { Scissors, ArrowRight, Loader2, UserPlus, LogIn, CheckCircle2 } from 'lucide-react';
 
 const Login = () => {
     const [userIdInput, setUserIdInput] = useState('');
     const [isLoginMode, setIsLoginMode] = useState(true);
     const [error, setError] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
     const [loading, setLoading] = useState(false);
     const { login, register } = useCustomers();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         const tidiedId = userIdInput.trim().toLowerCase();
+
         if (!tidiedId) {
             setError('Please enter a User ID');
             return;
@@ -24,12 +26,18 @@ const Login = () => {
 
         setLoading(true);
         setError('');
+        setSuccessMessage('');
 
         const result = isLoginMode
             ? await login(tidiedId)
             : await register(tidiedId);
 
-        if (!result.success) {
+        if (result.success) {
+            if (!isLoginMode) {
+                setSuccessMessage('Account created successfully! Redirecting...');
+                // The App level handles the redirect because isLoggedIn changes
+            }
+        } else {
             setError(result.error);
         }
         setLoading(false);
@@ -65,7 +73,7 @@ const Login = () => {
             }}>
                 <div style={{ display: 'flex', gap: '10px', marginBottom: '24px', background: '#f8f9fa', padding: '4px', borderRadius: '12px' }}>
                     <button
-                        onClick={() => { setIsLoginMode(true); setError(''); }}
+                        onClick={() => { setIsLoginMode(true); setError(''); setSuccessMessage(''); }}
                         style={{
                             flex: 1,
                             padding: '10px',
@@ -84,7 +92,7 @@ const Login = () => {
                         <LogIn size={16} /> Login
                     </button>
                     <button
-                        onClick={() => { setIsLoginMode(false); setError(''); }}
+                        onClick={() => { setIsLoginMode(false); setError(''); setSuccessMessage(''); }}
                         style={{
                             flex: 1,
                             padding: '10px',
@@ -126,6 +134,12 @@ const Login = () => {
                             }}
                         />
                         {error && <p style={{ color: 'var(--error)', fontSize: '0.8rem', marginTop: '8px' }}>{error}</p>}
+                        {successMessage && (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--primary)', fontSize: '0.85rem', marginTop: '12px', background: 'rgba(74, 103, 65, 0.1)', padding: '10px', borderRadius: '8px' }}>
+                                <CheckCircle2 size={16} />
+                                {successMessage}
+                            </div>
+                        )}
                     </div>
 
                     <button
