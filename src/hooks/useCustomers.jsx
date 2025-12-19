@@ -42,15 +42,39 @@ export const CustomerProvider = ({ children }) => {
                 body: JSON.stringify({ userId: id })
             });
             const data = await response.json();
-            if (data.success) {
+            if (response.ok && data.success) {
                 setUserId(id);
                 localStorage.setItem('tailorship_userid', id);
                 setIsLoggedIn(true);
                 return { success: true };
+            } else {
+                return { success: false, error: data.error || 'Login failed' };
             }
         } catch (error) {
             console.error('Login error:', error);
-            return { success: false, error: 'Login failed' };
+            return { success: false, error: 'Network error or server down' };
+        }
+    };
+
+    const register = async (id) => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/auth/register`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: id })
+            });
+            const data = await response.json();
+            if (response.ok && data.success) {
+                setUserId(id);
+                localStorage.setItem('tailorship_userid', id);
+                setIsLoggedIn(true);
+                return { success: true };
+            } else {
+                return { success: false, error: data.error || 'Registration failed' };
+            }
+        } catch (error) {
+            console.error('Registration error:', error);
+            return { success: false, error: 'Network error or server down' };
         }
     };
 
@@ -118,6 +142,7 @@ export const CustomerProvider = ({ children }) => {
             loading,
             userId,
             login,
+            register,
             logout,
             addCustomer,
             updateCustomer,

@@ -51,6 +51,20 @@ const authenticate = (req, res, next) => {
     next();
 };
 
+// Register endpoint
+app.post('/api/auth/register', (req, res) => {
+    const { userId } = req.body;
+    if (!userId) return res.status(400).json({ error: 'User ID required' });
+
+    const existing = stmts.getUser.get(userId);
+    if (existing) {
+        return res.status(400).json({ error: 'User ID already exists. Please choose another or login.' });
+    }
+
+    stmts.createUser.run(userId);
+    res.json({ success: true, user: { id: userId } });
+});
+
 // Auth endpoint
 app.post('/api/auth/login', (req, res) => {
     const { userId } = req.body;
@@ -58,8 +72,7 @@ app.post('/api/auth/login', (req, res) => {
 
     let user = stmts.getUser.get(userId);
     if (!user) {
-        stmts.createUser.run(userId);
-        user = { id: userId };
+        return res.status(404).json({ error: 'User ID not found. Please create one.' });
     }
     res.json({ success: true, user });
 });
