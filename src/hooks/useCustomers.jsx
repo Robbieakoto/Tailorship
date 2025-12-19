@@ -1,35 +1,110 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 
 const CustomerContext = createContext();
 
-const STORAGE_KEY = 'tailorship_customers';
+const API_BASE_URL = 'http://localhost:3001/api';
 
 export const CustomerProvider = ({ children }) => {
-    const [customers, setCustomers] = useState(() => {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        return saved ? JSON.parse(saved) : [];
-    });
+    const [userId, setUserId] = useState(localStorage.getItem('tailorship_userid'));
+    const [customers, setCustomers] = useState([]);
+    const [isLoggedIn, setIsLoggedIn] = useState(!!userId);
+    const [loading, setLoading] = useState(false);
+
+    const fetchCustomers = useCallback(async () => {
+        if (!userId) return;
+        setLoading(true);
+        try {
+            const response = await fetch(`${API_BASE_URL}/customers`, {
+                headers: { 'x-user-id': userId }
+            });
+            const data = await response.json();
+            setCustomers(data);
+        } catch (error) {
+            console.error('Error fetching customers:', error);
+        } finally {
+            setLoading(false);
+        }
+    }, [userId]);
 
     useEffect(() => {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(customers));
-    }, [customers]);
+        if (userId) {
+            fetchCustomers();
+        } else {
+            setCustomers([]);
+        }
+    }, [userId, fetchCustomers]);
 
-    const addCustomer = (customer) => {
-        const newCustomer = {
-            ...customer,
-            id: Date.now().toString(),
-            createdAt: new Date().toISOString()
-        };
-        setCustomers(prev => [...prev, newCustomer]);
-        return newCustomer;
+    const login = async (id) => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: id })
+            });
+            const data = await response.json();
+            if (data.success) {
+                setUserId(id);
+                localStorage.setItem('tailorship_userid', id);
+                setIsLoggedIn(true);
+                return { success: true };
+            }
+        } catch (error) {
+            console.error('Login error:', error);
+            return { success: false, error: 'Login failed' };
+        }
     };
 
-    const updateCustomer = (id, updatedData) => {
-        setCustomers(prev => prev.map(c => c.id === id ? { ...c, ...updatedData } : c));
+    const logout = () => {
+        setUserId(null);
+        localStorage.removeItem('tailorship_userid');
+        setIsLoggedIn(false);
+        setCustomers([]);
     };
 
-    const deleteCustomer = (id) => {
-        setCustomers(prev => prev.filter(c => c.id !== id));
+    const addCustomer = async (customer) => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/customers`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-user-id': userId
+                },
+                body: JSON.stringify(customer)
+            });
+            const newCustomer = await response.json();
+            setCustomers(prev => [...prev, newCustomer]);
+            return newCustomer;
+        } catch (error) {
+            console.error('Error adding customer:', error);
+        }
+    };
+
+    const updateCustomer = async (id, updatedData) => {
+        try {
+            await fetch(`${API_BASE_URL}/customers/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-user-id': userId
+                },
+                body: JSON.stringify(updatedData)
+            });
+            setCustomers(prev => prev.map(c => c.id === id ? { ...c, ...updatedData } : c));
+        } catch (error) {
+            console.error('Error updating customer:', error);
+        }
+    };
+
+    const deleteCustomer = async (id) => {
+        try {
+            await fetch(`${API_BASE_URL}/customers/${id}`, {
+                method: 'DELETE',
+                headers: { 'x-user-id': userId }
+            });
+            setCustomers(prev => prev.filter(c => c.id !== id));
+        } catch (error) {
+            console.error('Error deleting customer:', error);
+        }
     };
 
     const getCustomer = (id) => {
@@ -39,10 +114,16 @@ export const CustomerProvider = ({ children }) => {
     return (
         <CustomerContext.Provider value={{
             customers,
+            isLoggedIn,
+            loading,
+            userId,
+            login,
+            logout,
             addCustomer,
             updateCustomer,
             deleteCustomer,
-            getCustomer
+            getCustomer,
+            refreshCustomers: fetchCustomers
         }}>
             {children}
         </CustomerContext.Provider>

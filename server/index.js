@@ -1,0 +1,114 @@
+const express = require('express');
+const cors = require('cors');
+const Database = require('better-sqlite3');
+const path = require('path');
+
+const app = express();
+const PORT = process.env.PORT || 3001;
+const db = new Database(path.join(__dirname, 'tailorship.db'));
+
+app.use(cors());
+app.use(express.json());
+
+// Initialize DB
+db.exec(`
+  CREATE TABLE IF NOT EXISTS users (
+    id TEXT PRIMARY KEY,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE TABLE IF NOT EXISTS customers (
+    id TEXT PRIMARY KEY,
+    userId TEXT,
+    name TEXT,
+    phone TEXT,
+    gender TEXT,
+    dateTaken TEXT,
+    measurements TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (userId) REFERENCES users(id)
+  );
+`);
+
+// Setup prepared statements
+const stmts = {
+    getUser: db.prepare('SELECT * FROM users WHERE id = ?'),
+    createUser: db.prepare('INSERT INTO users (id) VALUES (?)'),
+    getCustomers: db.prepare('SELECT * FROM customers WHERE userId = ?'),
+    getCustomer: db.prepare('SELECT * FROM customers WHERE id = ? AND userId = ?'),
+    addCustomer: db.prepare('INSERT INTO customers (id, userId, name, phone, gender, dateTaken, measurements) VALUES (?, ?, ?, ?, ?, ?, ?)'),
+    updateCustomer: db.prepare('UPDATE customers SET name = ?, phone = ?, gender = ?, dateTaken = ?, measurements = ? WHERE id = ? AND userId = ?'),
+    deleteCustomer: db.prepare('DELETE FROM customers WHERE id = ? AND userId = ?')
+};
+
+// Auth middleware (simplified for this task)
+const authenticate = (req, res, next) => {
+    const userId = req.headers['x-user-id'];
+    if (!userId) {
+        return res.status(401).json({ error: 'User ID is required' });
+    }
+    req.userId = userId;
+    next();
+};
+
+// Auth endpoint
+app.post('/api/auth/login', (req, res) => {
+    const { userId } = req.body;
+    if (!userId) return res.status(400).json({ error: 'User ID required' });
+
+    let user = stmts.getUser.get(userId);
+    if (!user) {
+        stmts.createUser.run(userId);
+        user = { id: userId };
+    }
+    res.json({ success: true, user });
+});
+
+// Customers endpoints
+app.get('/api/customers', authenticate, (req, res) => {
+    const customers = stmts.getCustomers.all(req.userId);
+    res.json(customers.map(c => ({
+        ...c,
+        measurements: JSON.parse(c.measurements)
+    })));
+});
+
+app.post('/api/customers', authenticate, (req, res) => {
+    const customer = req.body;
+    const id = Date.now().toString();
+    stmts.addCustomer.run(
+        id,
+        req.userId,
+        customer.name,
+        customer.phone,
+        customer.gender,
+        customer.dateTaken,
+        JSON.stringify(customer.measurements)
+    );
+    res.json({ id, ...customer });
+});
+
+app.put('/api/customers/:id', authenticate, (req, res) => {
+    const { id } = req.params;
+    const customer = req.body;
+    stmts.updateCustomer.run(
+        customer.name,
+        customer.phone,
+        customer.gender,
+        customer.dateTaken,
+        JSON.stringify(customer.measurements),
+        id,
+        req.userId
+    );
+    res.json({ success: true });
+});
+
+app.delete('/api/customers/:id', authenticate, (req, res) => {
+    const { id } = req.params;
+    stmts.deleteCustomer.run(id, req.userId);
+    res.json({ success: true });
+});
+
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});

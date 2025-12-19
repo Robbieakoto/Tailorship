@@ -1,12 +1,31 @@
 import { useNavigate } from 'react-router-dom';
-import { UserPlus, BookOpen, Scissors } from 'lucide-react';
+import { UserPlus, BookOpen, Scissors, LogOut, User } from 'lucide-react';
+import { useCustomers } from '../hooks/useCustomers';
 
 const Home = () => {
     const navigate = useNavigate();
+    const { userId, logout } = useCustomers();
 
     return (
         <div className="container fade-in">
-            <header style={{ textAlign: 'center', margin: '40px 0' }}>
+            <header style={{ textAlign: 'center', margin: '40px 0', position: 'relative' }}>
+                <button
+                    onClick={logout}
+                    style={{
+                        position: 'absolute',
+                        top: '-20px',
+                        right: '0',
+                        background: 'white',
+                        padding: '10px',
+                        borderRadius: '50%',
+                        boxShadow: 'var(--shadow)',
+                        color: 'var(--error)'
+                    }}
+                    title="Logout"
+                >
+                    <LogOut size={20} />
+                </button>
+
                 <div style={{
                     background: 'var(--primary)',
                     width: '80px',
@@ -22,9 +41,25 @@ const Home = () => {
                 </div>
                 <h1>Tailorship</h1>
                 <p style={{ color: 'var(--text-muted)' }}>Professional Measurement Records</p>
+
+                <div style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    marginTop: '16px',
+                    padding: '6px 16px',
+                    background: '#edeff2',
+                    borderRadius: '20px',
+                    fontSize: '0.85rem',
+                    color: 'var(--text-dark)',
+                    fontWeight: '600'
+                }}>
+                    <User size={14} />
+                    ID: {userId}
+                </div>
             </header>
 
-            <div style={{ display: 'grid', gap: '20px', marginTop: '40px' }}>
+            <div style={{ display: 'grid', gap: '20px', marginTop: '20px' }}>
                 <button
                     onClick={() => navigate('/add')}
                     style={{
