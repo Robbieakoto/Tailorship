@@ -132,6 +132,10 @@ app.delete('/api/customers/:id', authenticate, (req, res) => {
     res.json({ success: true });
 });
 
+app.get('/api/health', (req, res) => {
+    res.json({ status: 'ok' });
+});
+
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });

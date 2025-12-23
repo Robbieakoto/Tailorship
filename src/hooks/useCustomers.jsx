@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 
 const CustomerContext = createContext();
 
-const API_BASE_URL = 'http://localhost:3001/api';
+const API_BASE_URL = '/api';
 
 export const CustomerProvider = ({ children }) => {
     const [userId, setUserId] = useState(localStorage.getItem('tailorship_userid'));
